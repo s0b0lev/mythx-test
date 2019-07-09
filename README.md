@@ -34,7 +34,6 @@ $ docker run --rm -t mythx-test
 
 ### CLI params
 
-<<<<<<< Updated upstream
 | flag     | Value | Default             | Description     |
 | ---------|---------------------|-----------------|
 | --api-url | https://api.mythx.io| https://api.mythx.io | URL to MythX API |
