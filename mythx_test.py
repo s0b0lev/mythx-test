@@ -63,6 +63,7 @@ def main():
     c = Client(eth_address=ETH_ADDRESS, password=PASSWORD, handler=handler)
     logging.info(f"Submit analysis to API: {args.api_url}")
     resp = c.analyze(**API_PAYLOAD)
+    logging.info(resp.to_dict())
 
     while not c.analysis_ready(resp.uuid):
         logging.info("Checking analysis status")
