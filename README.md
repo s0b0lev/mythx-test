@@ -24,14 +24,16 @@ $ docker build -t mythx-test .
 $ docker run --rm -t mythx-test
 ```
 
+## Settings
+### Environment variables
 
-## Environment variables
-
-|| env     || Default             || Description     ||
+| env     | Default             | Description     |
+|---------|---------------------|-----------------|
 | ETH_ADDRESS | 0x0000000000000000000000000000000000000000 | MythX account address |
 | PASSWORD | trial | MythX account password |
 
-## CLI params
+### CLI params
 
-|| flag     || Default             || Description     ||
+| flag     | Default             | Description     |
+| ---------|---------------------|-----------------|
 | --api-url | https://api.mythx.io | URL to MythX API |
