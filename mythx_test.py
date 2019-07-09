@@ -1,13 +1,20 @@
 #!/usr/bin/env python
+import argparse
 import logging
+import os
 import time
 
 from pythx import Client
+from pythx.conf import config
 
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(message)s")
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s')
+ETH_ADDRESS_DEFAULT = "0x0000000000000000000000000000000000000000"
+PASSWORD_DEFAULT = "trial"
 
-# SWC-100 visibility_not_set.sol
+ETH_ADDRESS = os.environ.get("ETH_ADDRESS", default=ETH_ADDRESS_DEFAULT)
+PASSWORD = os.environ.get("PASSWORD", default=PASSWORD_DEFAULT)
+
 API_PAYLOAD = {
     "contract_name": "HashForEther",
     "bytecode": "608060405234801561001057600080fd5b5061011d806100206000396000f3006080604052600436106049576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806383ac4ae114604e578063cc42e83a146062575b600080fd5b348015605957600080fd5b5060606076565b005b348015606d57600080fd5b50607460d5565b005b3373ffffffffffffffffffffffffffffffffffffffff166108fc3073ffffffffffffffffffffffffffffffffffffffff16319081150290604051600060405180830381858888f1935050505015801560d2573d6000803e3d6000fd5b50565b60003363ffffffff1614151560e957600080fd5b60ef6076565b5600a165627a7a72305820b27fdb0b720929ae434b4424a0a4baefc1f0360ae870d73ef4fec622b9a863960029",
@@ -25,10 +32,21 @@ API_PAYLOAD = {
 }
 
 
-def main():
-    c = Client(
-        eth_address="0x0000000000000000000000000000000000000000", password="trial"
+def create_parser(parser: argparse.ArgumentParser):
+    parser.add_argument(
+        "--api-url", default="https://api.mythx.io", help="Specify API url"
     )
+    return parser
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Submit analysis to MythX API")
+    create_parser(parser)
+    args = parser.parse_args()
+
+    config["endpoints"]["production"] = args.api_url
+
+    c = Client(eth_address=ETH_ADDRESS, password=PASSWORD)
     logging.debug("Submit analysis to API")
     resp = c.analyze(**API_PAYLOAD)
 
