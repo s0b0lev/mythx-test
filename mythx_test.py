@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 import argparse
 import logging
+import json
 import os
 import time
 
 from pythx import Client
 from pythx.conf import config
+from pythx.api.handler import APIHandler
+from pythx.middleware.analysiscache import AnalysisCacheMiddleware
+from pythx.middleware.toolname import ClientToolNameMiddleware
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 
 ETH_ADDRESS_DEFAULT = "0x0000000000000000000000000000000000000000"
 PASSWORD_DEFAULT = "trial"
@@ -36,6 +40,9 @@ def create_parser(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--api-url", default="https://api.mythx.io", help="Specify API url"
     )
+    parser.add_argument(
+        "--no-cache", action="store_true", help="Use API cache"
+    )
     return parser
 
 
@@ -46,17 +53,26 @@ def main():
 
     config["endpoints"]["production"] = args.api_url
 
-    c = Client(eth_address=ETH_ADDRESS, password=PASSWORD)
-    logging.debug("Submit analysis to API")
+    handler = APIHandler(
+        middlewares=[
+            ClientToolNameMiddleware(name="ApiTests"),
+            AnalysisCacheMiddleware(no_cache=args.no_cache),
+        ]
+    )
+    logging.info(f"Running MythX API tests without cache: {args.no_cache}")
+    c = Client(eth_address=ETH_ADDRESS, password=PASSWORD, handler=handler)
+    logging.info(f"Submit analysis to API: {args.api_url}")
     resp = c.analyze(**API_PAYLOAD)
 
     while not c.analysis_ready(resp.uuid):
-        logging.debug("Checking analysis status")
+        logging.info("Checking analysis status")
         time.sleep(1)
 
-    return c.report(resp.uuid)
+    issues = c.report(resp.uuid)
+    detected_issues = issues.to_dict()
+    logging.info(json.dumps(detected_issues, indent=2))
+    return detected_issues
 
 
 if __name__ == "__main__":
-    logging.debug("Running MythX API tests")
     main()
