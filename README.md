@@ -21,7 +21,7 @@ $ docker build -t mythx-test .
 
 2. Run test in docker:
 ```bash
-$ docker run --rm -t mythx-test
+$ docker run --rm -t mythx-test --no-cache
 ```
 
 ## Settings
