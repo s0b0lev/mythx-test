@@ -35,6 +35,6 @@ $ docker run --rm -t mythx-test --no-cache
 ### CLI params
 
 | flag     | Value | Default             | Description     |
-| ---------|---------------------|-----------------|
+| ---------|--------|-------------|-----------------|
 | --api-url | https://api.mythx.io| https://api.mythx.io | URL to MythX API |
 | --no-cache | (without value) | Cache enabled | Specify if you wanna run without cache |
